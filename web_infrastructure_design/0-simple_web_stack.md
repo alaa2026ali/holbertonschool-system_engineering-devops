@@ -32,4 +32,4 @@ The infrastructure consists of one server hosting a web server (Nginx), an appli
 
 ### Diagram
 
-View the infrastructure diagram
+[View the infrastructure diagram](https://github.com/alaa2026ali/holbertonschool-system_engineering-devops/blob/main/web_infrastructure_design/0-simple_web_stack.png.drawio.png)
