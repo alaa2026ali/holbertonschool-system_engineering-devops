@@ -37,5 +37,4 @@ This infrastructure is designed to improve scalability, performance, and availab
 This scaled-up infrastructure separates the main application components and introduces load-balancer redundancy. It improves maintainability, resource utilization, and availability. However, the web server, application server, and database server can still be single points of failure unless additional redundancy is implemented for those components.
 
 ## Diagram
-
-[[View the infrastructure diagram](INSERT_YOUR_GITHUB_IMAGE_URL_HERE)](https://github.com/alaa2026ali/holbertonschool-system_engineering-devops/blob/main/web_infrastructure_design/3-scale_up.drawio.png)
+https://github.com/alaa2026ali/holbertonschool-system_engineering-devops/blob/main/web_infrastructure_design/3-scale_up.drawio.png
