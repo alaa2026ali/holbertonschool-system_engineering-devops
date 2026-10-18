@@ -80,5 +80,4 @@ Without monitoring, it is difficult to detect server failures, high resource usa
 
 ## 8. Diagram
 
-[[Insert the URL of the infrastructure diagram here.]
-](https://github.com/alaa2026ali/holbertonschool-system_engineering-devops/blob/main/web_infrastructure_design/1-distributed_web_infrastructure.drawio.png)
+(https://github.com/alaa2026ali/holbertonschool-system_engineering-devops/blob/main/web_infrastructure_design/1-distributed_web_infrastructure.drawio.png)
