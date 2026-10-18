@@ -93,4 +93,5 @@ Separating the web, application, and database tiers can make scaling, security, 
 
 ## 8. Diagram
 
-[Insert the URL of the infrastructure diagram here.]
+[[Insert the URL of the infrastructure diagram here.]
+](https://github.com/alaa2026ali/holbertonschool-system_engineering-devops/blob/main/web_infrastructure_design/2-secured_and_monitored_web_infrastructure.drawio.png)
