@@ -2,231 +2,95 @@
 
 ## 1. Infrastructure Overview
 
-This infrastructure hosts `www.foobar.com` using HTTPS. It includes one HAProxy load balancer, three servers, three firewalls, one SSL/TLS certificate, and three monitoring agents.
-
-Each server contains an Nginx web server, an application server, application files, and a MySQL database component. The application servers work in an Active-Active setup, while the databases use a Primary-Replica replication setup.
-
-## 2. How the Infrastructure Works
-
-1. A user enters `www.foobar.com` in their browser.
-2. DNS resolves the domain name to the public IP address of the load balancer.
-3. The first firewall filters incoming network traffic.
-4. HAProxy receives HTTPS requests and uses the SSL/TLS certificate to establish encrypted connections with clients.
-5. HAProxy distributes requests across healthy application servers.
-6. The other firewalls restrict traffic between internal components.
-7. Nginx receives requests and forwards dynamic requests to the application server.
-8. The application processes requests and communicates with MySQL.
-9. The Primary database handles write operations and replicates changes to the Replica databases.
-10. Monitoring agents collect system metrics and logs and send them to a monitoring service such as Sumo Logic.
-
-##
-
-```mermaid
-flowchart TB
-    U[User Browser]
-    DNS[DNS: www.foobar.com]
-    FW1[Firewall 1]
-    LB[HAProxy Load Balancer]
-    CERT[SSL/TLS Certificate]
-    FW2[Firewall 2]
-    FW3[Firewall 3]
-
-    subgraph S1[Server 1]
-        N1[Nginx]
-        A1[Application Server]
-        D1[(MySQL Primary)]
-        M1[Monitoring Agent 1]
-        N1 --> A1
-        A1 --> D1
-    end
+This infrastructure hosts `www.foobar.com` using HAProxy, two application servers, and a MySQL Primary database.
 
-    subgraph S2[Server 2]
-        N2[Nginx]
-        A2[Application Server]
-        D2[(MySQL Replica)]
-        M2[Monitoring Agent 2]
-        N2 --> A2
-        A2 --> D2
-    end
+It includes three firewalls, an SSL certificate for HTTPS, and three monitoring clients that collect infrastructure data and send it to a monitoring platform such as Sumo Logic.
 
-    subgraph S3[Server 3]
-        N3[Nginx]
-        A3[Application Server]
-        D3[(MySQL Replica)]
-        M3[Monitoring Agent 3]
-        N3 --> A3
-        A3 --> D3
-    end
+## 2. How It Works
 
-    MON[Monitoring Service<br/>Sumo Logic]
+1. The user accesses `https://www.foobar.com`.
+2. The first firewall allows authorized incoming HTTPS traffic and blocks unauthorized connections.
+3. HAProxy receives the HTTPS request and uses the SSL certificate to establish an encrypted connection with the client.
+4. HAProxy distributes requests between the two application servers.
+5. Each application server has a firewall that restricts access to authorized ports and services.
+6. Nginx receives requests and forwards dynamic requests to the application server.
+7. The application server communicates with the MySQL Primary database for database operations.
+8. Three monitoring clients collect metrics and logs from the infrastructure and send the data to the monitoring platform.
+9. The monitoring platform analyzes the collected data and can generate alerts when configured thresholds or conditions are met.
 
-    U --> DNS --> FW1 --> LB
-    CERT -. installed on .-> LB
-    LB --> FW2
-    FW2 --> N1
-    FW2 --> N2
-    FW2 --> N3
-    FW3 -. protects database network .-> D1
-    FW3 -. protects database network .-> D2
-    FW3 -. protects database network .-> D3
+## 3. Why These Additional Elements Are Added
 
-    D1 -. replication .-> D2
-    D1 -. replication .-> D3
+- **Three Firewalls:** Firewalls control network traffic and help prevent unauthorized access to the load balancer, application servers, and database.
+- **SSL Certificate:** The certificate enables HTTPS and helps the browser verify the website's identity.
+- **HTTPS:** HTTPS encrypts traffic between the browser and the HTTPS endpoint, protecting sensitive information from being read or modified in transit.
+- **Three Monitoring Clients:** Monitoring clients collect data from the infrastructure components and forward it to a centralized monitoring service.
+- **Monitoring Platform:** A service such as Sumo Logic centralizes logs and metrics, helps identify errors and performance issues, and supports alerting.
 
-    M1 -. metrics and logs .-> MON
-    M2 -. metrics and logs .-> MON
-    M3 -. metrics and logs .-> MON
-```
+## 4. What Are Firewalls For?
 
-**Note:** The diagram illustrates the main components and their relationships. In a production environment, firewall placement and routing must be configured to ensure that only authorized connections are allowed.
+Firewalls filter network traffic according to configured security rules. They allow authorized connections and block unauthorized ones.
 
-## 4. Why Each Additional Element Is Added
+For example:
+- The public firewall allows HTTPS traffic on port 443.
+- Application server firewalls allow traffic from authorized sources, such as HAProxy.
+- Database access is restricted to authorized application servers and administrative connections.
 
-- **Three Firewalls:** They filter network traffic and block unauthorized connections. They protect the public entry point, internal servers, and database network.
-- **SSL/TLS Certificate:** It enables HTTPS for `www.foobar.com`, encrypts traffic, and allows browsers to verify the website's identity.
-- **Three Monitoring Agents:** Each agent collects data from one server, providing visibility into all three servers.
-- **Monitoring Service:** A service such as Sumo Logic receives, stores, analyzes, and displays metrics and logs. It can also trigger alerts.
-- **HAProxy Load Balancer:** It distributes incoming requests across healthy application servers.
-- **Three Application Servers:** They increase application capacity and allow the application to continue operating if one server fails, provided health checks and routing are configured correctly.
-- **MySQL Primary-Replica Replication:** It maintains copies of database changes on replica databases. Replicas can serve selected read queries and may help with recovery.
+## 5. Why Is Traffic Served Over HTTPS?
 
-## 5. What Are Firewalls For?
+HTTPS uses TLS encryption to protect data transmitted between the browser and the website's HTTPS endpoint.
 
-A firewall controls incoming and outgoing network traffic based on security rules. It allows authorized connections and blocks unnecessary or unauthorized traffic.
+It provides:
+- **Confidentiality:** Prevents unauthorized parties from reading encrypted traffic.
+- **Integrity:** Helps detect unauthorized modification of traffic.
+- **Authentication:** Allows the browser to verify the server's identity using its certificate.
 
-Examples of firewall rules include:
+## 6. How Monitoring Works
 
-- Allow HTTPS traffic on TCP port 443 to reach the load balancer.
-- Allow the load balancer to connect only to the required web-server ports.
-- Allow database connections only from authorized application servers.
-- Block public access to MySQL ports.
-- Restrict administrative access to approved sources.
+Monitoring collects and analyzes information about the health, performance, and availability of infrastructure components.
 
-Firewalls reduce the attack surface and help protect internal services from unauthorized access.
+The monitoring clients collect metrics and logs from servers and services. They send this data to a centralized monitoring platform, such as Sumo Logic, where it can be searched, analyzed, visualized, and used to trigger alerts.
 
-## 6. Why Is Traffic Served Over HTTPS?
+Examples of monitored information include CPU usage, memory usage, disk usage, application errors, request rates, and response times.
 
-HTTPS uses TLS to encrypt communication between a browser and the HTTPS endpoint.
+### Monitoring Web Server QPS
 
-HTTPS is important because it:
+To monitor web server QPS (Queries Per Second), configure Nginx to expose or record request counts and collect the relevant metrics using a monitoring agent or exporter.
 
-- Protects passwords, session cookies, and sensitive information while in transit.
-- Helps prevent attackers from reading or modifying network traffic.
-- Allows the browser to verify the website's identity using its certificate.
+Calculate QPS by counting the requests received during a time interval and dividing the count by the number of seconds in that interval.
 
-The certificate must be valid for `www.foobar.com`, must not be expired, and must be renewed before expiry.
+For example, if Nginx receives 600 requests in 60 seconds:
 
-HTTP requests should redirect to HTTPS where appropriate.
+QPS = 600 / 60 = 10 requests per second.
 
-## 7. What Is Monitoring Used For?
+A monitoring dashboard can display QPS over time and generate alerts when request rates exceed configured thresholds.
 
-Monitoring helps administrators understand the health, availability, and performance of the infrastructure.
+## 7. Infrastructure Issues
 
-It can track:
+### SSL Termination at the Load Balancer
 
-- CPU, memory, disk, and network usage.
-- Web-server availability and HTTP errors.
-- Application errors and response times.
-- Database availability and replication lag.
-- Request volume and server performance.
+If SSL/TLS terminates at HAProxy, the connection between the browser and HAProxy is encrypted. However, traffic between HAProxy and the backend servers may be unencrypted if HTTP is used.
 
-Monitoring alerts help the team detect failures and performance problems before they cause significant disruption.
+This can expose sensitive information inside the network. To protect backend traffic, use HTTPS between HAProxy and the backend servers as well, or use another appropriately secured encrypted connection.
 
-## 8. How Does the Monitoring Tool Collect Data?
+The load balancer also becomes responsible for managing the certificate and its private key.
 
-A monitoring agent, also called a data collector, runs on each server.
+### Only One MySQL Server Accepts Writes
 
-The agent can collect:
+The Primary database is a single point of failure for write operations. If it fails, writes may become unavailable until recovery or failover occurs.
 
-1. **System Metrics:** CPU usage, memory consumption, disk usage, and network activity.
-2. **Web-Server Logs:** Nginx access logs, error logs, HTTP status codes, and request information.
-3. **Application Data:** Application errors, exceptions, and response times.
-4. **Database Metrics:** Database availability, active connections, query performance, and replication lag.
+A replicated database and a properly configured failover mechanism can improve availability, but replication alone does not guarantee automatic failover or prevent data loss.
 
-The agents send collected data to a monitoring service such as Sumo Logic over a protected connection.
+### All Servers Have the Same Components
 
-The monitoring service stores and analyzes the data, displays dashboards, and evaluates alert rules.
+Running the database, web server, and application server on every server can cause several problems:
 
-The exact collection method depends on the monitoring product and the integrations that are configured.
+- **Resource contention:** The database and application compete for CPU, memory, disk, and other resources.
+- **Complexity:** Database replication, consistency, and configuration become harder to manage.
+- **Limited flexibility:** Scaling the application and database independently becomes difficult.
+- **Larger failure impact:** A server failure may affect several services at once.
 
-## 9. How Can We Monitor Web Server QPS?
+Separating the web, application, and database tiers can make scaling, security, maintenance, and resource management easier.
 
-QPS stands for **Queries Per Second**. For a web server, it generally means the number of HTTP requests handled per second.
+## 8. Diagram
 
-One way to monitor QPS is to collect request counters from Nginx using its status endpoint, an exporter, or access-log analysis.
-
-The monitoring system calculates the rate of increase of the request counter over time.
-
-For example, if a server handles 600 requests in 60 seconds:
-
-`QPS = 600 / 60 = 10 requests per second`
-
-A monitoring dashboard can display QPS over time and generate alerts when traffic becomes unusually high or low.
-
-The metric should cover all relevant web servers. Any status endpoint must be protected from public access.
-
-## 10. Issues With This Infrastructure
-
-### 10.1 SSL Termination at the Load Balancer
-
-When SSL/TLS terminates at HAProxy, traffic between HAProxy and the backend servers may be unencrypted unless TLS is also configured for internal connections.
-
-This creates a security risk because someone who can access the internal network may be able to inspect sensitive traffic.
-
-The load balancer also becomes a point where decrypted traffic and certificate private keys must be protected.
-
-**Possible improvements:**
-
-- Use HTTPS between HAProxy and backend servers when required.
-- Restrict access to internal networks.
-- Protect certificate private keys.
-- Renew certificates before they expire.
-
-### 10.2 Only One MySQL Server Can Accept Writes
-
-If only the Primary database accepts writes, it becomes a potential bottleneck and a single point of failure for write operations.
-
-If the Primary fails, write operations may become unavailable until it recovers or a Replica is promoted.
-
-Replication alone does not guarantee automatic failover or prevent data loss.
-
-**Possible improvements:**
-
-- Configure and test a failover procedure.
-- Monitor database health and replication lag.
-- Maintain regular database backups.
-- Prevent multiple databases from accepting conflicting writes during failover.
-
-### 10.3 All Servers Have the Same Components
-
-Having an Nginx web server, application server, and database on every server can make the infrastructure more difficult to maintain.
-
-The database may compete with the application for CPU, memory, and disk resources. Running multiple database instances also increases the work required for backups, security, replication, and maintenance.
-
-**Possible improvements:**
-
-- Separate the application tier from the database tier when appropriate.
-- Scale application servers independently from databases.
-- Restrict database access to authorized application servers.
-- Monitor each component separately.
-
-### 10.4 Remaining Single Points of Failure
-
-Even with three application servers, a single HAProxy load balancer can remain a single point of failure. If it fails, users may lose access to the application.
-
-The Primary database can also interrupt writes if it fails.
-
-**Possible improvements:**
-
-- Use redundant load balancers with a failover mechanism.
-- Monitor load-balancer and database health.
-- Test database recovery and failover procedures.
-- Maintain backups and document recovery steps.
-
-## 11. Conclusion
-
-This infrastructure improves security through firewalls and HTTPS and improves operational visibility through monitoring agents and a centralized monitoring service.
-
-However, it is not automatically fully fault-tolerant. The load balancer and the write-capable Primary database may remain single points of failure.
-
-Appropriate firewall rules, TLS configuration, monitoring alerts, database backups, and tested failover procedures are necessary for a secure and reliable infrastructure.
+[Insert the URL of the infrastructure diagram here.]
