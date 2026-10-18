@@ -30,6 +30,6 @@ The infrastructure consists of one server hosting a web server (Nginx), an appli
 - **Downtime during maintenance:** Restarting the web server or deploying new code may temporarily make the website unavailable.
 - **Limited scalability:** A single server has limited processing power and resources. It may not handle a large increase in incoming traffic.
 
-### Diagram Screenshot
+### Diagram
 
-[Insert the URL of the infrastructure diagram here.]
+View the infrastructure diagram
