@@ -77,10 +77,8 @@ If the Primary fails, the Replica does not automatically become the Primary unle
 
 Without monitoring, it is difficult to detect server failures, high resource usage, application errors, database problems, or increased response times. Alerts and health checks are needed to detect problems quickly.
 
-8. Diagram
+
+## 8. Diagram
 
 [[Insert the URL of the infrastructure diagram here.]
 ](https://github.com/alaa2026ali/holbertonschool-system_engineering-devops/blob/main/web_infrastructure_design/1-distributed_web_infrastructure.drawio.png)
-## 8. Diagram
-
-[Insert the URL of the infrastructure diagram here.]
